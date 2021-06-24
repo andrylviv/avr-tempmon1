@@ -56,9 +56,9 @@ static uchar    bytesRemaining;
     if(!currentAddress)        // Ни один кусок данных еще не прочитан.
     {                          // Заполним структуру для передачи
           
-            pdata.b1 = TempH;
+            pdata.b1 = TempH_temp;
         
-            pdata.b2 = TempL;
+            pdata.b2 = TempL_temp;
        
     }
 

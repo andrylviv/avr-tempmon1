@@ -15,19 +15,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   5 .debug_aranges 000000c8  00000000  00000000  00000c50  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000013ed  00000000  00000000  00000d18  2**0
+  6 .debug_info   000013e6  00000000  00000000  00000d18  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000009b8  00000000  00000000  00002105  2**0
+  7 .debug_abbrev 000009b8  00000000  00000000  000020fe  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00001768  00000000  00000000  00002abd  2**0
+  8 .debug_line   00001768  00000000  00000000  00002ab6  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000150  00000000  00000000  00004228  2**2
+  9 .debug_frame  00000150  00000000  00000000  00004220  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000706  00000000  00000000  00004378  2**0
+ 10 .debug_str    000006ff  00000000  00000000  00004370  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000b2b  00000000  00000000  00004a7e  2**0
+ 11 .debug_loc    00000b2b  00000000  00000000  00004a6f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000000d0  00000000  00000000  000055a9  2**0
+ 12 .debug_ranges 000000d0  00000000  00000000  0000559a  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -128,628 +128,310 @@ Disassembly of section .text:
   e4:	8d cf       	rjmp	.-230    	; 0x0 <__vectors>
 
 000000e6 <ready_wait_for_c>:
-.extern TempH_temp
-.extern TempL_temp
-.extern display
-.extern symb
-
-ready_wait_for_c:lds r22,kom_dan_value
   e6:	60 91 71 00 	lds	r22, 0x0071	; 0x800071 <kom_dan_value>
-                 lds kom_dan,display
   ea:	70 91 60 00 	lds	r23, 0x0060	; 0x800060 <__data_start>
 
 000000ee <ready_wait>:
-ready_wait: 
-                     
- ;---очікування готовності
- ldi temp,0b00001011 ;порт на
   ee:	2b e0       	ldi	r18, 0x0B	; 11
- out DDRD,temp       ; вхід
   f0:	21 bb       	out	0x11, r18	; 17
- in temp,PORTD        ;без
   f2:	22 b3       	in	r18, 0x12	; 18
- ORI temp,0xF0        ;подтажки
   f4:	20 6f       	ori	r18, 0xF0	; 240
- out PORTD,temp
   f6:	22 bb       	out	0x12, r18	; 18
-
- cbi PORTD,RS  ; RS 0
   f8:	90 98       	cbi	0x12, 0	; 18
- sbi PORTD,RW  ; R/W 1
   fa:	91 9a       	sbi	0x12, 1	; 18
- nop
   fc:	00 00       	nop
- sbi PORTD,E  ;E 1
   fe:	93 9a       	sbi	0x12, 3	; 18
- ldi r24,0x31      ;--------------------------
  100:	81 e3       	ldi	r24, 0x31	; 49
- ldi r25,0x00      ;   µs
  102:	90 e0       	ldi	r25, 0x00	; 0
- rcall delay       ;--------------------------
  104:	bf d0       	rcall	.+382    	; 0x284 <delay>
- in r19,PinD
  106:	30 b3       	in	r19, 0x10	; 16
- nop
  108:	00 00       	nop
- cbi PORTD,E  ;E 0
  10a:	93 98       	cbi	0x12, 3	; 18
- nop
  10c:	00 00       	nop
- sbi PORTD,E  ;E 1
  10e:	93 9a       	sbi	0x12, 3	; 18
- ldi r24,0x31      ;--------------------------
  110:	81 e3       	ldi	r24, 0x31	; 49
- ldi r25,0x00      ;   µs
  112:	90 e0       	ldi	r25, 0x00	; 0
- rcall delay       ;--------------------------
  114:	b7 d0       	rcall	.+366    	; 0x284 <delay>
- in r20,PinD
  116:	40 b3       	in	r20, 0x10	; 16
- nop
  118:	00 00       	nop
- cbi PORTD,E  ;E 0
  11a:	93 98       	cbi	0x12, 3	; 18
- ldi r24,0x07      ;--------------------------
  11c:	87 e0       	ldi	r24, 0x07	; 7
- ldi r25,0x00      ;   µs
  11e:	90 e0       	ldi	r25, 0x00	; 0
- rcall delay       ;--------------------------
  120:	b1 d0       	rcall	.+354    	; 0x284 <delay>
- sbrc r19,7
  122:	37 fd       	sbrc	r19, 7
- rjmp ready_wait
  124:	e4 cf       	rjmp	.-56     	; 0xee <ready_wait>
- ;   початок відправки команди
- clr temp
  126:	22 27       	eor	r18, r18
- out PORTD,temp
  128:	22 bb       	out	0x12, r18	; 18
- ldi temp,0b11111011 ;порт на
  12a:	2b ef       	ldi	r18, 0xFB	; 251
- out DDRD,temp 
  12c:	21 bb       	out	0x11, r18	; 17
- push kom_dan       ;стек ком_дан
  12e:	7f 93       	push	r23
- andi kom_dan,0xF0  ;і віддавили старшу тетр. байта (молодшу команди) 
  130:	70 7f       	andi	r23, 0xF0	; 240
- out PORTD,R22
  132:	62 bb       	out	0x12, r22	; 18
- nop
  134:	00 00       	nop
- sbi PORTD,E       ;E 1
  136:	93 9a       	sbi	0x12, 3	; 18
- in R22,PORTD      ;копіюєм порт d-
  138:	62 b3       	in	r22, 0x12	; 18
- andi r22,0x0F
  13a:	6f 70       	andi	r22, 0x0F	; 15
- or R22,kom_dan    ;зростили RS,R/W,E і ст тетр. ком_дан
  13c:	67 2b       	or	r22, r23
- out PORTD,R22     ;видали в порт
  13e:	62 bb       	out	0x12, r22	; 18
- ldi r24,0x31      ;--------------------------
  140:	81 e3       	ldi	r24, 0x31	; 49
- ldi r25,0x00      ;   µs
  142:	90 e0       	ldi	r25, 0x00	; 0
- rcall delay       ;--------------------------
  144:	9f d0       	rcall	.+318    	; 0x284 <delay>
- cbi PORTD,E      ;строб в 0
  146:	93 98       	cbi	0x12, 3	; 18
- nop
  148:	00 00       	nop
- nop
  14a:	00 00       	nop
- ;передача другого півбайта
- in temp,PORTD     ;копіюєм порт d
  14c:	22 b3       	in	r18, 0x12	; 18
- andi temp,0x0F    ;выддавили ст.тетр залиш RS,R/W,E 
  14e:	2f 70       	andi	r18, 0x0F	; 15
- pop kom_dan          ;стек ком_дан
  150:	7f 91       	pop	r23
- swap kom_dan       
  152:	72 95       	swap	r23
- andi kom_dan,0xF0    ;і віддавили старшу тетр. байта (старшу команди) 
  154:	70 7f       	andi	r23, 0xF0	; 240
- out PORTD,temp
  156:	22 bb       	out	0x12, r18	; 18
- nop
  158:	00 00       	nop
- sbi PORTD,E         ;строб в 1
  15a:	93 9a       	sbi	0x12, 3	; 18
- in temp,PORTD     ;копіюєм порт d
  15c:	22 b3       	in	r18, 0x12	; 18
- andi temp,0x0F
  15e:	2f 70       	andi	r18, 0x0F	; 15
- or temp,kom_dan       ;зростили RS,R/W,E і ст тетр. ком_дан
  160:	27 2b       	or	r18, r23
- out PORTD,temp    ;відправили в порт 
  162:	22 bb       	out	0x12, r18	; 18
- ldi r24,0x31      ;--------------------------
  164:	81 e3       	ldi	r24, 0x31	; 49
- ldi r25,0x00      ;   µs
  166:	90 e0       	ldi	r25, 0x00	; 0
- rcall delay       ;--------------------------
  168:	8d d0       	rcall	.+282    	; 0x284 <delay>
- cbi PORTD,E         ;строб в 0
  16a:	93 98       	cbi	0x12, 3	; 18
- ldi r24,0x31      ;--------------------------
  16c:	81 e3       	ldi	r24, 0x31	; 49
- ldi r25,0x00      ;   µs
  16e:	90 e0       	ldi	r25, 0x00	; 0
- rcall delay       ;--------------------------
  170:	89 d0       	rcall	.+274    	; 0x284 <delay>
- ldi temp,0b00000011
  172:	23 e0       	ldi	r18, 0x03	; 3
- sbrc r22,1
  174:	61 fd       	sbrc	r22, 1
- ldi temp,0b00000010
  176:	22 e0       	ldi	r18, 0x02	; 2
- out PORTD,temp
  178:	22 bb       	out	0x12, r18	; 18
- ldi temp,0b00001011 ;порт на
  17a:	2b e0       	ldi	r18, 0x0B	; 11
- out DDRD,temp       ; вхід 
  17c:	21 bb       	out	0x11, r18	; 17
- ldi temp,0x30
  17e:	20 e3       	ldi	r18, 0x30	; 48
- sts display,temp
  180:	20 93 60 00 	sts	0x0060, r18	; 0x800060 <__data_start>
- ret
  184:	08 95       	ret
 
 00000186 <init_com>:
-
-init_com:	        
- //push temp
- in temp,SREG
  186:	2f b7       	in	r18, 0x3f	; 63
- ;ком ініціалізації (мол тетрарда)
- ldi r24,(0<<RS)|(1<<E)
  188:	88 e0       	ldi	r24, 0x08	; 8
- out PORTD,r24
  18a:	82 bb       	out	0x12, r24	; 18
- or temp,r24
  18c:	28 2b       	or	r18, r24
- out PORTD,temp
  18e:	22 bb       	out	0x12, r18	; 18
- ldi r24,(0<<RS)|(0<<E)
  190:	80 e0       	ldi	r24, 0x00	; 0
- out PORTD,r24
  192:	82 bb       	out	0x12, r24	; 18
- ldi r24,0x31      ;--------------------------
  194:	81 e3       	ldi	r24, 0x31	; 49
- ldi r25,0x00      ;   µs
  196:	90 e0       	ldi	r25, 0x00	; 0
- rcall delay 
  198:	75 d0       	rcall	.+234    	; 0x284 <delay>
- out SREG,temp
  19a:	2f bf       	out	0x3f, r18	; 63
- //pop temp
- ret
  19c:	08 95       	ret
 
 0000019e <reset18b20>:
-
-reset18b20:       ;імпульс скид і присутн
-sbi DDRB,L
  19e:	b8 9a       	sbi	0x17, 0	; 23
-cbi PORTB,L
  1a0:	c0 98       	cbi	0x18, 0	; 24
-;ret
-ldi r24,0x9E      ;--------------------------
  1a2:	8e e9       	ldi	r24, 0x9E	; 158
-ldi r25,0x05      ;   480µs
  1a4:	95 e0       	ldi	r25, 0x05	; 5
-rcall delay       ;--------------------------
  1a6:	6e d0       	rcall	.+220    	; 0x284 <delay>
-cbi DDRB,L
  1a8:	b8 98       	cbi	0x17, 0	; 23
-cbi PORTB,L
  1aa:	c0 98       	cbi	0x18, 0	; 24
-ldi r24,0x2E      ;--------------------------
  1ac:	8e e2       	ldi	r24, 0x2E	; 46
-ldi r25,0x00      ;   15µs
  1ae:	90 e0       	ldi	r25, 0x00	; 0
-rcall delay       ;----------------------
  1b0:	69 d0       	rcall	.+210    	; 0x284 <delay>
 
 000001b2 <vair>:
-vair: sbic PinB,0
  1b2:	b0 99       	sbic	0x16, 0	; 22
-rjmp vair
  1b4:	fe cf       	rjmp	.-4      	; 0x1b2 <vair>
-ldi r24,0x9E      ;--------------------------
  1b6:	8e e9       	ldi	r24, 0x9E	; 158
-ldi r25,0x05      ;   480µs
  1b8:	95 e0       	ldi	r25, 0x05	; 5
-rcall delay       ;--------------------------
  1ba:	64 d0       	rcall	.+200    	; 0x284 <delay>
-ret
  1bc:	08 95       	ret
 
 000001be <write_slot>:
-
- write_slot:       ;слот запису
-ldi cou,9
  1be:	49 e0       	ldi	r20, 0x09	; 9
 
 000001c0 <n_bit>:
-n_bit: dec cou
  1c0:	4a 95       	dec	r20
-cpi cou,0
  1c2:	40 30       	cpi	r20, 0x00	; 0
-BRNE sd 
  1c4:	09 f4       	brne	.+2      	; 0x1c8 <sd>
-ret
  1c6:	08 95       	ret
 
 000001c8 <sd>:
-sd:LSR dsW_R
  1c8:	36 95       	lsr	r19
-BRCS wr_1_slot
  1ca:	48 f0       	brcs	.+18     	; 0x1de <wr_1_slot>
-BRCC wr_0_slot
  1cc:	00 f4       	brcc	.+0      	; 0x1ce <wr_0_slot>
 
 000001ce <wr_0_slot>:
-wr_0_slot:
-ldi r24,0xF1      ;--------------------------
  1ce:	81 ef       	ldi	r24, 0xF1	; 241
-ldi r25,0x00      ;   80µs
  1d0:	90 e0       	ldi	r25, 0x00	; 0
-sbi DDRB,L
  1d2:	b8 9a       	sbi	0x17, 0	; 23
-cbi PORTB,L
  1d4:	c0 98       	cbi	0x18, 0	; 24
-rcall delay       ;--------------------------
  1d6:	56 d0       	rcall	.+172    	; 0x284 <delay>
-cbi PORTB,L
  1d8:	c0 98       	cbi	0x18, 0	; 24
-cbi DDRB,L
  1da:	b8 98       	cbi	0x17, 0	; 23
-;cbi PORTB,L
-rjmp n_bit
  1dc:	f1 cf       	rjmp	.-30     	; 0x1c0 <n_bit>
 
 000001de <wr_1_slot>:
-wr_1_slot:
-ldi r24,0x2E     ;--------------------------
  1de:	8e e2       	ldi	r24, 0x2E	; 46
-ldi r25,0x00      ;   15µs
  1e0:	90 e0       	ldi	r25, 0x00	; 0
-sbi DDRB,L
  1e2:	b8 9a       	sbi	0x17, 0	; 23
-cbi PORTB,L
  1e4:	c0 98       	cbi	0x18, 0	; 24
-rcall delay       ;--------------------------
  1e6:	4e d0       	rcall	.+156    	; 0x284 <delay>
-cbi DDRB,L
  1e8:	b8 98       	cbi	0x17, 0	; 23
-cbi PORTB,L
  1ea:	c0 98       	cbi	0x18, 0	; 24
-ldi r24,0xC4     ;--------------------------
  1ec:	84 ec       	ldi	r24, 0xC4	; 196
-ldi r25,0x00      ;   65µs
  1ee:	90 e0       	ldi	r25, 0x00	; 0
-rcall delay       ;--------------------------
  1f0:	49 d0       	rcall	.+146    	; 0x284 <delay>
-rjmp n_bit
  1f2:	e6 cf       	rjmp	.-52     	; 0x1c0 <n_bit>
 
 000001f4 <read_slot>:
-
-;--------------------------------------------------------
-read_slot:       ;слот читання
-clr cou
  1f4:	44 27       	eor	r20, r20
 
 000001f6 <ne_bit>:
-ne_bit:
-sbi DDRB,L
  1f6:	b8 9a       	sbi	0x17, 0	; 23
-cbi PORTB,L       ;просадили лінію master
  1f8:	c0 98       	cbi	0x18, 0	; 24
-ldi r24,0x04      ;--------------------------
  1fa:	84 e0       	ldi	r24, 0x04	; 4
-ldi r25,0x00      ;   1µs
  1fc:	90 e0       	ldi	r25, 0x00	; 0
-rcall delay       ;--------------------------
  1fe:	42 d0       	rcall	.+132    	; 0x284 <delay>
-cbi DDRB,L        ;відпускаєм
  200:	b8 98       	cbi	0x17, 0	; 23
-cbi PORTB,L       ;шину 
  202:	c0 98       	cbi	0x18, 0	; 24
-ldi r24,0x25      ;--------------------------
  204:	85 e2       	ldi	r24, 0x25	; 37
-ldi r25,0x00      ;   12µs
  206:	90 e0       	ldi	r25, 0x00	; 0
-rcall delay       ;--------------------------
  208:	3d d0       	rcall	.+122    	; 0x284 <delay>
-in temp,PinB
  20a:	26 b3       	in	r18, 0x16	; 22
-lsr temp
  20c:	26 95       	lsr	r18
-ROR data
  20e:	37 95       	ror	r19
-;inc cou
-subi cou,-1
  210:	4f 5f       	subi	r20, 0xFF	; 255
-cpi cou,8
  212:	48 30       	cpi	r20, 0x08	; 8
-BREQ tim1
  214:	19 f0       	breq	.+6      	; 0x21c <tim1>
-cpi cou,16
  216:	40 31       	cpi	r20, 0x10	; 16
-BREQ tim2
  218:	21 f0       	breq	.+8      	; 0x222 <tim2>
-rjmp ndel
  21a:	06 c0       	rjmp	.+12     	; 0x228 <ndel>
 
 0000021c <tim1>:
-tim1:sts TempL_temp,data
  21c:	30 93 70 00 	sts	0x0070, r19	; 0x800070 <TempL_temp>
-rjmp ndel
  220:	03 c0       	rjmp	.+6      	; 0x228 <ndel>
 
 00000222 <tim2>:
-tim2:sts TempH_temp,data
  222:	30 93 74 00 	sts	0x0074, r19	; 0x800074 <TempH_temp>
-ret
  226:	08 95       	ret
 
 00000228 <ndel>:
-ndel:ldi r24,0x88      ;--------------------------
  228:	88 e8       	ldi	r24, 0x88	; 136
-ldi r25,0x00      ;   45µs
  22a:	90 e0       	ldi	r25, 0x00	; 0
-rcall delay       ;--------------------------
  22c:	2b d0       	rcall	.+86     	; 0x284 <delay>
-rjmp ne_bit
  22e:	e3 cf       	rjmp	.-58     	; 0x1f6 <ne_bit>
-ret
  230:	08 95       	ret
 
 00000232 <vpor>:
-
-vpor:
-lds temp,TempH_temp        ;вигр ст.темпер
  232:	20 91 74 00 	lds	r18, 0x0074	; 0x800074 <TempH_temp>
-swap temp                  ;
  236:	22 95       	swap	r18
-andi temp,0xF0             ;віддавили хлам
  238:	20 7f       	andi	r18, 0xF0	; 240
-lds r19,TempL_temp         ;загр мол.тет
  23a:	30 91 70 00 	lds	r19, 0x0070	; 0x800070 <TempL_temp>
-swap r19                   ;
  23e:	32 95       	swap	r19
-andi r19,0x0F              ;відав дробн.час
  240:	3f 70       	andi	r19, 0x0F	; 15
-or temp,r19                ;зростили знач температури
  242:	23 2b       	or	r18, r19
-sts TempH,temp             ;зберегли старший
  244:	20 93 73 00 	sts	0x0073, r18	; 0x800073 <TempH>
-lds r19,TempL_temp         ;
  248:	30 91 70 00 	lds	r19, 0x0070	; 0x800070 <TempL_temp>
-andi r19,0x0F              ;
  24c:	3f 70       	andi	r19, 0x0F	; 15
-sts TempL,r19              ;і молодший
  24e:	30 93 76 00 	sts	0x0076, r19	; 0x800076 <TempL>
-sbrs temp,7                ;перевірка на мінусовість
  252:	27 ff       	sbrs	r18, 7
-rjmp vstplus               ;якщо +
  254:	13 c0       	rjmp	.+38     	; 0x27c <vstplus>
-com r19                    ;-------------
  256:	30 95       	com	r19
-andi r19,0x0F              ;
  258:	3f 70       	andi	r19, 0x0F	; 15
-com temp
  25a:	20 95       	com	r18
-ldi r20,1
  25c:	41 e0       	ldi	r20, 0x01	; 1
-add r19,r20
  25e:	34 0f       	add	r19, r20
-mov r20,r19
  260:	43 2f       	mov	r20, r19
-andi r19,0x0F
  262:	3f 70       	andi	r19, 0x0F	; 15
-sts TempL,r19              ;плюсовий мінус:)
  264:	30 93 76 00 	sts	0x0076, r19	; 0x800076 <TempL>
-swap r20
  268:	42 95       	swap	r20
-lsr r20
  26a:	46 95       	lsr	r20
-clr r20
  26c:	44 27       	eor	r20, r20
-adc temp,r20
  26e:	24 1f       	adc	r18, r20
-sts TempH,temp             ;зберегли 
  270:	20 93 73 00 	sts	0x0073, r18	; 0x800073 <TempH>
-ldi temp,0x2D              ;
  274:	2d e2       	ldi	r18, 0x2D	; 45
-sts symb,temp              ;
  276:	20 93 75 00 	sts	0x0075, r18	; 0x800075 <symb>
-ret			               ;----------------------
  27a:	08 95       	ret
 
 0000027c <vstplus>:
-vstplus:                   ;встановили плюс
-ldi temp,0x2B
  27c:	2b e2       	ldi	r18, 0x2B	; 43
-sts symb,temp
  27e:	20 93 75 00 	sts	0x0075, r18	; 0x800075 <symb>
-ret
  282:	08 95       	ret
 
 00000284 <delay>:
-;------------------------------
-delay:
-subi r24,1
  284:	81 50       	subi	r24, 0x01	; 1
-sbci r25,0           ;затримка
  286:	90 40       	sbci	r25, 0x00	; 0
-brcc delay
  288:	e8 f7       	brcc	.-6      	; 0x284 <delay>
-ret
  28a:	08 95       	ret
 
 0000028c <delay1>:
-delay1:
-subi r23,1
  28c:	71 50       	subi	r23, 0x01	; 1
-sbci r24,0           ;затримка
  28e:	80 40       	sbci	r24, 0x00	; 0
-sbci r25,0
  290:	90 40       	sbci	r25, 0x00	; 0
-brcc delay1
  292:	e0 f7       	brcc	.-8      	; 0x28c <delay1>
-ret
  294:	08 95       	ret
 
 00000296 <vst_kom>:
-ldi r23,0xBE       ;--------------------------
-ldi r24,0xD4 
-ldi r25,0x01       ;   50 ms
-rcall delay1       ;--------------------------
-*/
-ldi kom_dan,0b00110000
  296:	70 e3       	ldi	r23, 0x30	; 48
-ldi r22,0
  298:	60 e0       	ldi	r22, 0x00	; 0
-rcall init_com
  29a:	75 df       	rcall	.-278    	; 0x186 <init_com>
-ldi r24,0xA0      ;--------------------------
  29c:	80 ea       	ldi	r24, 0xA0	; 160
-ldi r25,0x3A      ;   5ms
  29e:	9a e3       	ldi	r25, 0x3A	; 58
-rcall delay       ;--------------------------
  2a0:	f1 df       	rcall	.-30     	; 0x284 <delay>
-ldi kom_dan,0b00110000
  2a2:	70 e3       	ldi	r23, 0x30	; 48
-ldi r22,0
  2a4:	60 e0       	ldi	r22, 0x00	; 0
-rcall init_com
  2a6:	6f df       	rcall	.-290    	; 0x186 <init_com>
-ldi r24,0x59      ;--------------------------
  2a8:	89 e5       	ldi	r24, 0x59	; 89
-ldi r25,0x02      ;   200µs
  2aa:	92 e0       	ldi	r25, 0x02	; 2
-rcall delay       ;--------------------------
  2ac:	eb df       	rcall	.-42     	; 0x284 <delay>
-ldi kom_dan,0b00110000
  2ae:	70 e3       	ldi	r23, 0x30	; 48
-ldi r22,0
  2b0:	60 e0       	ldi	r22, 0x00	; 0
-rcall init_com
  2b2:	69 df       	rcall	.-302    	; 0x186 <init_com>
-ldi r24,0x97      ;--------------------------
  2b4:	87 e9       	ldi	r24, 0x97	; 151
-ldi r25,0x00      ;   50µs
  2b6:	90 e0       	ldi	r25, 0x00	; 0
-rcall delay       ;--------------------------
  2b8:	e5 df       	rcall	.-54     	; 0x284 <delay>
-
-;-----------------------------------------------------------------------------------------
-ldi kom_dan,0x02  
  2ba:	72 e0       	ldi	r23, 0x02	; 2
-ldi r22,0
  2bc:	60 e0       	ldi	r22, 0x00	; 0
-rcall ready_wait     
  2be:	17 df       	rcall	.-466    	; 0xee <ready_wait>
-ldi kom_dan,0x28
  2c0:	78 e2       	ldi	r23, 0x28	; 40
-ldi r22,0
  2c2:	60 e0       	ldi	r22, 0x00	; 0
-rcall ready_wait                                                 ;ініціалізація
  2c4:	14 df       	rcall	.-472    	; 0xee <ready_wait>
-ldi kom_dan,0x0c
  2c6:	7c e0       	ldi	r23, 0x0C	; 12
-ldi r22,0
  2c8:	60 e0       	ldi	r22, 0x00	; 0
-rcall ready_wait
  2ca:	11 df       	rcall	.-478    	; 0xee <ready_wait>
-ldi kom_dan,0x01
  2cc:	71 e0       	ldi	r23, 0x01	; 1
-ldi r22,0
  2ce:	60 e0       	ldi	r22, 0x00	; 0
-rcall ready_wait
  2d0:	0e df       	rcall	.-484    	; 0xee <ready_wait>
-ldi kom_dan,0x06
  2d2:	76 e0       	ldi	r23, 0x06	; 6
-ldi r22,0
  2d4:	60 e0       	ldi	r22, 0x00	; 0
-rcall ready_wait 
  2d6:	0b df       	rcall	.-490    	; 0xee <ready_wait>
-;----------------------------------------------------------------------------------------
-;початок команди
-ldi kom_dan,0x74    ;-------------
  2d8:	74 e7       	ldi	r23, 0x74	; 116
-ldi r22,1           ;вст букву "t"
  2da:	61 e0       	ldi	r22, 0x01	; 1
-rcall ready_wait    ;-------------
  2dc:	08 df       	rcall	.-496    	; 0xee <ready_wait>
-ldi kom_dan,0x3D    ;-------------
  2de:	7d e3       	ldi	r23, 0x3D	; 61
-ldi r22,1           ;вст знак "="
  2e0:	61 e0       	ldi	r22, 0x01	; 1
-rcall ready_wait    ;-------------
  2e2:	05 df       	rcall	.-502    	; 0xee <ready_wait>
-;----------------------------------------------------------------------------------------
-
-ret
  2e4:	08 95       	ret
 
 000002e6 <maina>:
-
-maina:
-
-rcall reset18b20    ;процедура скид і готовн
  2e6:	5b df       	rcall	.-330    	; 0x19e <reset18b20>
-ldi dsW_R,0xCC      ;пропуск
  2e8:	3c ec       	ldi	r19, 0xCC	; 204
-rcall write_slot    ;ROM
  2ea:	69 df       	rcall	.-302    	; 0x1be <write_slot>
-ldi dsW_R,0x44      ;конверт
  2ec:	34 e4       	ldi	r19, 0x44	; 68
-rcall write_slot    ;темп
  2ee:	67 df       	rcall	.-306    	; 0x1be <write_slot>
 
 000002f0 <rea_vait>:
-rea_vait:sbis PinB,L;перевірка
  2f0:	b0 9b       	sbis	0x16, 0	; 22
-rjmp rea_vait       ;готовності
  2f2:	fe cf       	rjmp	.-4      	; 0x2f0 <rea_vait>
-rcall reset18b20   ;процедура скид і готовн
  2f4:	54 df       	rcall	.-344    	; 0x19e <reset18b20>
-ldi dsW_R,0xCC     ;пропуск
  2f6:	3c ec       	ldi	r19, 0xCC	; 204
-rcall write_slot   ;ROM
  2f8:	62 df       	rcall	.-316    	; 0x1be <write_slot>
-ldi dsW_R,0xBE     ;читання
  2fa:	3e eb       	ldi	r19, 0xBE	; 190
-rcall write_slot   ;памяті
  2fc:	60 df       	rcall	.-320    	; 0x1be <write_slot>
-rcall read_slot    ;читаєм температуру
  2fe:	7a df       	rcall	.-268    	; 0x1f4 <read_slot>
-rcall reset18b20   ;процедура скид і готовн. тільки температуру)
  300:	4e df       	rcall	.-356    	; 0x19e <reset18b20>
-ldi dsW_R,0xCC     ;пропуск
  302:	3c ec       	ldi	r19, 0xCC	; 204
-rcall write_slot   ;ROM
  304:	5c df       	rcall	.-328    	; 0x1be <write_slot>
-
-rcall vpor         ;розкидуєм по регістрах
  306:	95 df       	rcall	.-214    	; 0x232 <vpor>
-lds kom_dan,symb   ;---------------------------------------------
  308:	70 91 75 00 	lds	r23, 0x0075	; 0x800075 <symb>
-ldi r22,1          ;встановлення знака
  30c:	61 e0       	ldi	r22, 0x01	; 1
-rcall ready_wait   ;----------------------------------------------
  30e:	ef de       	rcall	.-546    	; 0xee <ready_wait>
-ldi r23,0x80        ;--------------------------
-ldi r24,0x84 
-ldi r25,0x1E        ;   50 ms
-rcall delay1        ;--------------------------
-*/
-ret
  310:	08 95       	ret
 
 00000312 <usbCrc16>:
@@ -1681,14 +1363,14 @@ skipAddrAssign:
  5ce:	08 c0       	rjmp	.+16     	; 0x5e0 <usbFunctionRead+0x28>
     {                          // Заполним структуру для передачи
           
-            pdata.b1 = TempH;
- 5d0:	90 91 73 00 	lds	r25, 0x0073	; 0x800073 <TempH>
+            pdata.b1 = TempH_temp;
+ 5d0:	90 91 74 00 	lds	r25, 0x0074	; 0x800074 <TempH_temp>
  5d4:	e6 e6       	ldi	r30, 0x66	; 102
  5d6:	f0 e0       	ldi	r31, 0x00	; 0
  5d8:	90 83       	st	Z, r25
         
-            pdata.b2 = TempL;
- 5da:	90 91 76 00 	lds	r25, 0x0076	; 0x800076 <TempL>
+            pdata.b2 = TempL_temp;
+ 5da:	90 91 70 00 	lds	r25, 0x0070	; 0x800070 <TempL_temp>
  5de:	91 83       	std	Z+1, r25	; 0x01
  * Для дополнительной информации см. документацию в usbdrv.h
  */
@@ -1716,7 +1398,7 @@ skipAddrAssign:
  5f6:	ff 4f       	sbci	r31, 0xFF	; 255
  5f8:	20 81       	ld	r18, Z
  5fa:	2c 93       	st	X, r18
-            pdata.b2 = TempL;
+            pdata.b2 = TempL_temp;
        
     }
 
