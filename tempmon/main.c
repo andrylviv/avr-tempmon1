@@ -28,7 +28,7 @@ PROGMEM char usbHidReportDescriptor[22] = { // USB report descriptor         // 
     0x15, 0x00,                             //    LOGICAL_MINIMUM (0)        // min. значение для данных
     0x26, 0xff, 0x00,                       //    LOGICAL_MAXIMUM (255)      // max. значение для данных, 255 тут не случайно, а чтобы уложиться в 1 байт
     0x75, 0x08,                             //    REPORT_SIZE (8)            // информация передается порциями, это размер одного "репорта" 8 бит
-    0x95, sizeof(struct dataexchange_t),    //    REPORT_COUNT               // количество порций (у нашем примере = 3, описанная выше структура передастся за три репорта)
+    0x95, sizeof(struct dataexchange_t),    //    REPORT_COUNT               // количество порций (у нашем примере = 2, описанная выше структура передастся за три репорта)
     0x09, 0x00,                             //    USAGE (Undefined)
     0xb2, 0x02, 0x01,                       //    FEATURE (Data,Var,Abs,Buf)
     0xc0                                    // END_COLLECTION
